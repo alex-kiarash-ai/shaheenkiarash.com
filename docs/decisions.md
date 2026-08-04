@@ -52,6 +52,18 @@ Both faces are self-hosted and subset, with no third-party font calls at runtime
 
 ---
 
+## 2026-08-04 — The build runs in CI, because it cannot run on the author's machine
+
+Not a preference. The development machine runs Windows **Smart App Control**, which blocks unsigned native modules. Astro 7's toolchain is native all the way down: the compiler binding is blocked, and forcing its WASI fallback just moves the failure one layer deeper into the bundler, with the image processor waiting behind that. Chasing a WebAssembly variant for every native module in the chain is unbounded work for a temporary result.
+
+**So `main` is the build.** Push, and CI compiles on Linux where no such policy exists. This costs a round trip per change and gains something worth having: the artefact that gets verified is the one that actually ships, built in the same environment every time, rather than one produced locally under conditions nobody else can reproduce.
+
+It also happens to be exactly what this project already claimed. The architecture states that all TypeScript executes once, on the build server. That was written as a description of the runtime model; it turned out to be a description of the only workflow available.
+
+**Options if local iteration becomes the bottleneck**, in preference order: install Node inside WSL, which is present and not subject to the Windows policy; or pin an Astro version whose toolchain is JavaScript rather than native. Neither is needed yet, and the second would be choosing a framework version for a local-machine reason, which is the wrong reason.
+
+---
+
 ## 2026-08-04 — Palette: inherited, with one contrast fix
 
 The near-black palette carries over from the previous site, which was reviewed and found to have a strong visual identity worth protecting. Neither end of the scale is a pure value: the canvas is a warm near-black and the ink a warm white, which is what keeps a high-contrast dark site from reading as harsh.
