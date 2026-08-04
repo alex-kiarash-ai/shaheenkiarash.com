@@ -1,0 +1,22 @@
+{
+  // Static assets only. No `main`, no Worker script: nothing runs at request time.
+  //
+  // NAME IS LOAD-BEARING. The custom domain shaheenkiarash.com is bound to the
+  // worker NAME, so every production deploy must target this exact string. A typo
+  // creates a second worker and silently leaves the domain on the old one.
+  // Staging overrides the name on the command line; it never edits this file.
+  "name": "plain-block-545a",
+  "compatibility_date": "2026-08-04",
+  "assets": {
+    "directory": "../dist",
+
+    // Serve a real 404 page rather than an SPA fallback. This is also what keeps
+    // /digitals honestly 404 instead of quietly returning the homepage.
+    "not_found_handling": "404-page",
+
+    // Load-bearing for this site specifically: the indexed URLs carried over from
+    // the old site have NO trailing slash (/commercial-model-stockholm), and this
+    // is what makes them resolve instead of missing.
+    "html_handling": "auto-trailing-slash"
+  }
+}

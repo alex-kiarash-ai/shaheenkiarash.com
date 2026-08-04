@@ -1,0 +1,26 @@
+# Redirect map. Natively supported by Cloudflare Workers static assets
+# (developers.cloudflare.com/workers/static-assets/redirects), so no router
+# worker and no meta-refresh stubs.
+#
+# These four URLs are INDEXED on the old site. The four-page v1 scope drops
+# them, and a 301 is what stops that being a silent loss of earned search
+# signal rather than a deliberate retirement.
+#
+# The top three reverse out at v1.1, when the intent pages come back as
+# tag-driven routes. They are kept together for exactly that reason: undoing
+# this is deleting three adjacent lines.
+
+/commercial-model-stockholm   /portfolio   301
+/fitness-model-stockholm      /portfolio   301
+/hair-model-stockholm         /portfolio   301
+
+# /now had a generator that died with the modeling lane, so keeping it would
+# mean shipping a page guaranteed to go stale. Availability lives on /about as
+# a sentence a human edits.
+/now                          /about       301
+
+# NOT redirected, deliberately:
+#   /digitals  - pulled from public view 2026-07-24 and should keep 404ing.
+#   /comp-card.pdf, /shaheen-kiarash-portfolio.pdf - keep their exact paths.
+#     A printed comp card points into this site; a moved path breaks paper
+#     that is already in the world.

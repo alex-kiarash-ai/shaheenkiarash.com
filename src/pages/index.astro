@@ -1,0 +1,72 @@
+---
+// Foundation-phase placeholder. Proves the pipeline end to end: build, deploy,
+// and the post-deploy checks that assert the site actually serves what was
+// built. The real pages land in the build phase, once the photographs are in.
+import '../styles/global.css';
+
+const title = 'Shaheen Kiarash';
+const description = 'Male model based in Stockholm, available worldwide.';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href="https://shaheenkiarash.com/" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content="https://shaheenkiarash.com/" />
+    <!-- Asserted by the post-deploy check. A missing share card is invisible
+         until someone pastes the link somewhere and it looks broken. -->
+    <meta property="og:image" content="https://shaheenkiarash.com/og-image.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <meta name="robots" content="noindex" />
+    <!-- noindex while this is a placeholder. Removed in the build phase, and
+         removing it is the switch that makes the site publicly discoverable. -->
+  </head>
+
+  <body>
+    <main>
+      <h1>{title}</h1>
+      <p class="line">Portfolio in progress.</p>
+      <p class="meta">
+        Built with Astro, compiled to static HTML and CSS, served from
+        Cloudflare's edge, deployed by GitHub Actions.
+      </p>
+    </main>
+
+    <style>
+      main {
+        min-height: 100svh;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        padding: var(--gutter);
+        max-width: var(--maxw);
+        margin-inline: auto;
+      }
+      h1 {
+        font-size: clamp(2.5rem, 9vw, 6rem);
+        letter-spacing: -0.015em;
+      }
+      .line {
+        color: var(--ink-soft);
+        margin-top: var(--s-2);
+        font-size: 1rem;
+      }
+      .meta {
+        color: var(--faint);
+        margin-top: var(--s-5);
+        font-size: 0.82rem;
+        max-width: 44ch;
+        line-height: 1.6;
+      }
+    </style>
+  </body>
+</html>

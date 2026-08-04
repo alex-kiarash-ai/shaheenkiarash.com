@@ -1,0 +1,72 @@
+/* Design system. Locked at the design phase, 2026-08-04.
+   Inherited from the previous site because its visual identity was judged a
+   strength worth protecting; this is a refinement, not a reinvention. */
+
+:root {
+  /* Surfaces. Warm near-black, never pure #000. */
+  --bg:           #0b0b0c;
+  --bg-deep:      #070708;
+  --bg-elevated:  #111113;
+  --frame:        #1a1a1c;
+
+  /* Ink. Warm white, never pure #fff. Neither end being a pure value is what
+     keeps a high-contrast dark site from reading as harsh. */
+  --ink:          #f3f2ef;   /* 17.57:1 on --bg */
+  --ink-soft:     #c7c6c1;   /* 11.50:1 */
+  --muted:        #8d8c87;   /*  5.84:1 */
+
+  /* Was #7a7974, which cleared AA on --bg at 4.51:1 and FAILED on the lighter
+     surfaces (4.32 on --bg-elevated, 3.98 on --frame). A contrast fix measured
+     against one background is half a fix. This value clears 4.5:1 on all four:
+     5.11 / 4.90 / 4.51. Do not revert it. */
+  --faint:        #83827d;
+
+  --line:         rgba(243, 242, 239, 0.12);
+  --line-soft:    rgba(243, 242, 239, 0.07);
+
+  /* Type. Self-hosted, no third-party font calls. */
+  --serif: 'Cormorant Garamond', Georgia, serif;
+  --sans:  'Inter', system-ui, sans-serif;
+
+  --s-1: 0.5rem; --s-2: 1rem;  --s-3: 1.5rem; --s-4: 2rem;
+  --s-5: 3rem;   --s-6: 4rem;  --s-7: 6rem;   --s-8: 9rem;
+
+  --maxw:   1280px;
+  --gutter: clamp(1.4rem, 5vw, 4rem);
+  --ease:   cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+* { margin: 0; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-weight: 400;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+img, picture, video { display: block; max-width: 100%; height: auto; }
+
+a { color: inherit; }
+
+h1, h2, h3 { font-family: var(--serif); font-weight: 300; line-height: 1.05; }
+
+/* Any element that cannot shrink below its content (wide tables, code blocks)
+   scrolls inside its own box. Letting one set the page width is how a layout
+   ends up horizontally scrolling on a phone with everything clipped. */
+.scroll-x { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
