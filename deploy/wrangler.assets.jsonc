@@ -1,0 +1,21 @@
+{
+  // The photo origin. A separate Worker that serves the portfolio JPEGs and
+  // nothing else, so the site build has a source that does not disappear when
+  // the main Worker is replaced at cutover.
+  //
+  // NAME IS DELIBERATELY NOT plain-block-545a. That name carries the custom
+  // domain binding for the live site; deploying this config against it would
+  // replace the portfolio with a folder of loose JPEGs.
+  "name": "shaheenkiarash-assets",
+  "compatibility_date": "2026-08-05",
+
+  // Populated by scripts/deploy-assets.mjs, never committed. The photographs
+  // are not licensed for redistribution and this repository is public.
+  "assets": {
+    "directory": "./assets-dist",
+
+    // No SPA fallback: a missing photo must 404 rather than return something
+    // that looks like success to a build script.
+    "not_found_handling": "none"
+  }
+}

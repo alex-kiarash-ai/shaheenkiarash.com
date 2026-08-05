@@ -13,17 +13,25 @@
  * start: if the photographer's grant is narrowed, nothing here changes. Only
  * PHOTO_SOURCE moves.
  *
- * PHOTO_SOURCE currently points at the live site, which serves these files
- * today. That is an INTERIM: the cutover replaces that site, so the source
- * must move to durable private storage before then, or the first build after
- * cutover will fail. It will fail loudly rather than silently shipping a
- * portfolio with no photographs, which is the failure mode worth having.
+ * PHOTO_SOURCE points at a dedicated photo-origin Worker, deployed separately
+ * by scripts/deploy-assets.mjs. It deliberately does NOT point at the live
+ * site: the cutover replaces that Worker, and a build that fetches from the
+ * thing it is about to overwrite fails at the worst possible moment and looks
+ * like the deploy broke the build.
+ *
+ * That origin serves the photographs and nothing else, carries
+ * X-Robots-Tag: noindex and a robots.txt disallowing everything, so it does
+ * not compete with the real site for the same images.
+ *
+ * If it is ever unreachable the build fails loudly rather than silently
+ * shipping a portfolio with no photographs, which is the failure mode worth
+ * having.
  */
 import { mkdir, writeFile, readdir, stat } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
 
-const SOURCE = process.env.PHOTO_SOURCE ?? 'https://shaheenkiarash.com';
+const SOURCE = process.env.PHOTO_SOURCE ?? 'https://shaheenkiarash-assets.shaheen-kiarash.workers.dev';
 const DEST = path.join(process.cwd(), 'src', 'assets', 'photos');
 
 // The curated set, in the order the live site shows them. Curation is content,

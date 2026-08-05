@@ -47,3 +47,7 @@ src/assets/originals/
 # redistribution. Git history is permanent, so keeping them out is the whole
 # mechanism, not a tidiness preference.
 src/assets/photos/
+
+# Staged payload for the photo-origin Worker. Built by
+# scripts/deploy-assets.mjs from the fetched photos, never committed.
+deploy/assets-dist/
