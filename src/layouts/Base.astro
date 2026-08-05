@@ -1,0 +1,317 @@
+---
+// The shared shell. Every page gets its head tags, the nav, and the contact
+// block from here, so the "contact appears twice on every page" rule from the
+// design phase is structural rather than something each page remembers to do.
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description: string;
+  /** Path with a leading slash, e.g. "/about". Used for the canonical URL. */
+  path: string;
+  /** Kept until the build phase replaces the placeholder home page. */
+  noindex?: boolean;
+  /** 404 and other utility pages stay out of the sitemap and the nav flow. */
+  utility?: boolean;
+}
+
+const { title, description, path, noindex = false, utility = false } = Astro.props;
+
+const SITE = 'https://shaheenkiarash.com';
+const canonical = SITE + path;
+const fullTitle = path === '/' ? 'Shaheen Kiarash' : `${title} · Shaheen Kiarash`;
+
+// Portfolio is deliberately absent until the photographs land. A nav link to a
+// page that 404s is worse than a nav with one fewer item.
+const nav = [
+  { href: '/', label: 'Home', index: '01' },
+  { href: '/about', label: 'About', index: '02' },
+  { href: '/contact', label: 'Contact', index: '03' },
+];
+
+const EMAIL = 'shaheen@shaheenkiarash.com';
+const MAILTO = `mailto:${EMAIL}?subject=${encodeURIComponent('Booking inquiry - Shaheen Kiarash')}`;
+const INSTAGRAM = 'https://www.instagram.com/shaheen.kiarash/';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={`${SITE}/og-image.jpg`} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    {(noindex || utility) && <meta name="robots" content="noindex" />}
+
+    <link
+      rel="preload"
+      href="/fonts/cormorant-garamond-latin-var.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/inter-latin-var.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  </head>
+
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+
+    <div class="grain" aria-hidden="true"></div>
+
+    <header class="site-head">
+      <a class="mark" href="/">
+        <span class="mark-name">Shaheen Kiarash</span>
+        <span class="mark-role">Stockholm · Model</span>
+      </a>
+
+      <nav aria-label="Primary">
+        <ul>
+          {nav.map((item) => (
+            <li>
+              <a
+                href={item.href}
+                aria-current={item.href === path ? 'page' : undefined}
+              >
+                <span class="nav-index">{item.index}</span>
+                <span class="nav-label">{item.label}</span>
+              </a>
+            </li>
+          ))}
+          <li class="nav-direct">
+            <a href={MAILTO}>Booking</a>
+          </li>
+        </ul>
+      </nav>
+    </header>
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <!-- The second contact surface. The design review's sharpest finding was a
+         reference site whose booking route was effectively hidden, so this
+         block is on every page by construction. -->
+    <section class="contact-block" aria-labelledby="contact-block-title">
+      <p class="eyebrow">Enquiries</p>
+      <h2 id="contact-block-title">Get in touch.</h2>
+      <p class="contact-lede">
+        Email is the quickest way to reach me. I read everything.
+      </p>
+
+      <ul class="contact-routes">
+        <li>
+          <span class="route-label">Email</span>
+          <a class="route-value" href={MAILTO}>{EMAIL}</a>
+        </li>
+        <li>
+          <span class="route-label">Instagram</span>
+          <a class="route-value" href={INSTAGRAM} rel="me noopener" target="_blank">
+            @shaheen.kiarash
+          </a>
+        </li>
+        <li>
+          <span class="route-label">Based in</span>
+          <span class="route-value plain">Stockholm, Sweden</span>
+        </li>
+      </ul>
+    </section>
+
+    <footer class="site-foot">
+      <p>© {new Date().getFullYear()} Shaheen Kiarash</p>
+      <p class="foot-clients">Shady Rays · Lullevibes</p>
+    </footer>
+
+    <style>
+      /* ---- shell ------------------------------------------------------- */
+
+      .skip {
+        position: absolute;
+        left: -9999px;
+        top: 0;
+        background: var(--ink);
+        color: var(--bg);
+        padding: 0.6rem 1rem;
+        z-index: 10;
+      }
+      .skip:focus { left: 0; }
+
+      /* Grain. A single inline SVG turbulence, so it costs no request and
+         cannot be blocked. It is what stops a flat near-black reading as an
+         empty div rather than a printed page. */
+      .grain {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 1;
+        opacity: 0.035;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+      }
+
+      .site-head {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--s-3);
+        align-items: baseline;
+        justify-content: space-between;
+        padding: var(--s-4) var(--gutter) var(--s-3);
+        max-width: var(--maxw);
+        margin-inline: auto;
+        border-bottom: 1px solid var(--line-soft);
+      }
+
+      .mark { text-decoration: none; display: grid; gap: 0.25rem; }
+      .mark-name {
+        font-family: var(--serif);
+        font-size: 1.35rem;
+        letter-spacing: 0.01em;
+      }
+      .mark-role {
+        font-size: 0.68rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      nav ul {
+        list-style: none;
+        padding: 0;
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--s-3);
+        align-items: baseline;
+      }
+      nav a {
+        text-decoration: none;
+        font-size: 0.72rem;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--ink-soft);
+        display: inline-flex;
+        gap: 0.5rem;
+        align-items: baseline;
+        padding-bottom: 0.2rem;
+        border-bottom: 1px solid transparent;
+        transition: color 0.35s var(--ease), border-color 0.35s var(--ease);
+      }
+      nav a:hover,
+      nav a:focus-visible { color: var(--ink); border-bottom-color: var(--ink); }
+      nav a[aria-current='page'] { color: var(--ink); border-bottom-color: var(--muted); }
+
+      .nav-index {
+        font-size: 0.6rem;
+        color: var(--faint);
+        font-variant-numeric: tabular-nums;
+      }
+      .nav-direct a { color: var(--ink); border-bottom-color: var(--line); }
+
+      main { position: relative; z-index: 2; }
+
+      /* ---- contact block ------------------------------------------------ */
+
+      .contact-block {
+        position: relative;
+        z-index: 2;
+        max-width: var(--maxw);
+        margin-inline: auto;
+        padding: var(--s-7) var(--gutter) var(--s-6);
+        border-top: 1px solid var(--line-soft);
+      }
+
+      .eyebrow {
+        font-size: 0.66rem;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--faint);
+        margin-bottom: var(--s-2);
+      }
+
+      .contact-block h2 {
+        font-size: clamp(2.4rem, 7vw, 4.5rem);
+        letter-spacing: -0.02em;
+      }
+
+      .contact-lede {
+        color: var(--ink-soft);
+        margin-top: var(--s-2);
+        max-width: 38ch;
+      }
+
+      .contact-routes {
+        list-style: none;
+        padding: 0;
+        margin-top: var(--s-5);
+        display: grid;
+        gap: 0;
+        max-width: 46rem;
+      }
+      .contact-routes li {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--s-2);
+        justify-content: space-between;
+        align-items: baseline;
+        padding: var(--s-2) 0;
+        border-top: 1px solid var(--line-soft);
+      }
+      .route-label {
+        font-size: 0.68rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--faint);
+      }
+      .route-value {
+        font-family: var(--serif);
+        font-size: clamp(1.1rem, 2.6vw, 1.5rem);
+        color: var(--ink);
+        text-decoration: none;
+        border-bottom: 1px solid var(--line);
+        transition: border-color 0.35s var(--ease);
+      }
+      .route-value:hover,
+      .route-value:focus-visible { border-bottom-color: var(--ink); }
+      .route-value.plain { border-bottom: none; color: var(--ink-soft); }
+
+      /* ---- footer -------------------------------------------------------- */
+
+      .site-foot {
+        position: relative;
+        z-index: 2;
+        max-width: var(--maxw);
+        margin-inline: auto;
+        padding: var(--s-3) var(--gutter) var(--s-5);
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--s-2);
+        justify-content: space-between;
+        font-size: 0.72rem;
+        letter-spacing: 0.1em;
+        color: var(--faint);
+      }
+      .foot-clients { letter-spacing: 0.16em; text-transform: uppercase; }
+
+      @media (max-width: 40rem) {
+        .site-head { padding-top: var(--s-3); }
+        nav ul { gap: var(--s-2) var(--s-3); }
+      }
+    </style>
+  </body>
+</html>

@@ -1,92 +1,64 @@
 ---
-// Foundation-phase placeholder. Proves the pipeline end to end: build, deploy,
-// and the post-deploy checks that assert the site actually serves what was
-// built. The real pages land in the build phase, once the photographs are in.
-import '../styles/global.css';
+// Still the placeholder, but now inside the shared shell so it carries the
+// nav, the contact block and the same head tags as every other page. The real
+// home page arrives with the photographs; the noindex comes off then, and
+// removing it is the switch that makes the site publicly discoverable.
+import Base from '../layouts/Base.astro';
 
-const title = 'Shaheen Kiarash';
-const description = 'Male model based in Stockholm, available worldwide.';
+const description = 'Shaheen Kiarash, model based in Stockholm. Hair, fitness and commercial.';
 ---
 
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{title}</title>
-    <meta name="description" content={description} />
-    <link rel="canonical" href="https://shaheenkiarash.com/" />
+<Base title="Home" description={description} path="/" noindex>
+  <section class="hero">
+    <p class="eyebrow">01 · Portfolio in progress</p>
+    <h1>Shaheen<br />Kiarash</h1>
+    <p class="line">Hair · Fitness · Commercial</p>
+    <p class="meta">
+      The new portfolio is being rebuilt. Built with Astro, compiled to static
+      HTML and CSS, served from Cloudflare's edge, deployed by GitHub Actions.
+      Bookings are open in the meantime.
+    </p>
+  </section>
+</Base>
 
-    <!-- Preload only the two faces that paint above the fold: the display serif
-         and the body sans. The italic is not preloaded on purpose, because it
-         appears rarely and preloading everything is the same as preloading
-         nothing. crossorigin is required even same-origin: a font fetch is
-         CORS-mode, and without it the browser downloads the file twice. -->
-    <link
-      rel="preload"
-      href="/fonts/cormorant-garamond-latin-var.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin
-    />
-    <link
-      rel="preload"
-      href="/fonts/inter-latin-var.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin
-    />
+<style>
+  .hero {
+    max-width: var(--maxw);
+    margin-inline: auto;
+    padding: var(--s-7) var(--gutter) var(--s-6);
+    min-height: 62svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
 
-    <meta property="og:type" content="website" />
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
-    <meta property="og:url" content="https://shaheenkiarash.com/" />
-    <!-- Asserted by the post-deploy check. A missing share card is invisible
-         until someone pastes the link somewhere and it looks broken. -->
-    <meta property="og:image" content="https://shaheenkiarash.com/og-image.jpg" />
-    <meta name="twitter:card" content="summary_large_image" />
+  .eyebrow {
+    font-size: 0.66rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--faint);
+    margin-bottom: var(--s-3);
+  }
 
-    <meta name="robots" content="noindex" />
-    <!-- noindex while this is a placeholder. Removed in the build phase, and
-         removing it is the switch that makes the site publicly discoverable. -->
-  </head>
+  h1 {
+    font-size: clamp(3rem, 13vw, 9rem);
+    letter-spacing: -0.025em;
+    line-height: 0.92;
+  }
 
-  <body>
-    <main>
-      <h1>{title}</h1>
-      <p class="line">Portfolio in progress.</p>
-      <p class="meta">
-        Built with Astro, compiled to static HTML and CSS, served from
-        Cloudflare's edge, deployed by GitHub Actions.
-      </p>
-    </main>
+  .line {
+    color: var(--ink-soft);
+    margin-top: var(--s-3);
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
 
-    <style>
-      main {
-        min-height: 100svh;
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-end;
-        padding: var(--gutter);
-        max-width: var(--maxw);
-        margin-inline: auto;
-      }
-      h1 {
-        font-size: clamp(2.5rem, 9vw, 6rem);
-        letter-spacing: -0.015em;
-      }
-      .line {
-        color: var(--ink-soft);
-        margin-top: var(--s-2);
-        font-size: 1rem;
-      }
-      .meta {
-        color: var(--faint);
-        margin-top: var(--s-5);
-        font-size: 0.82rem;
-        max-width: 44ch;
-        line-height: 1.6;
-      }
-    </style>
-  </body>
-</html>
+  .meta {
+    color: var(--faint);
+    margin-top: var(--s-4);
+    font-size: 0.85rem;
+    max-width: 48ch;
+    line-height: 1.65;
+  }
+</style>

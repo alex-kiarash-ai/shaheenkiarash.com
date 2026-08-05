@@ -1,0 +1,3 @@
+Photo entries land here at the build phase, one markdown file per frame.
+The schema lives in src/content.config.ts and is deliberately defined ahead of
+the images so that adding a photograph is a new file, never a template edit.

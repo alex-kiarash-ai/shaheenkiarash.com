@@ -1,0 +1,183 @@
+---
+import Base from '../layouts/Base.astro';
+
+// Every value here is carried from the live site rather than written fresh.
+// A measurement a client cannot trust is worse than no measurement page.
+const stats = [
+  { label: 'Height', value: '184 cm' },
+  { label: 'Chest', value: '108 cm' },
+  { label: 'Waist', value: '82 cm' },
+  { label: 'Hips', value: '88 cm' },
+  { label: 'Arms', value: '40 cm' },
+  { label: 'Weight', value: '89 kg' },
+  { label: 'Shoe', value: 'EU 45' },
+  { label: 'Hair', value: 'Dark brown · long · curly' },
+  { label: 'Eyes', value: 'Brown' },
+  { label: 'Languages', value: 'Arabic · English · Swedish' },
+];
+
+const description =
+  'Stockholm-based model working in hair, fitness and commercial. Shoots across the Nordics and Mediterranean, available internationally.';
+---
+
+<Base title="About" description={description} path="/about" noindex>
+  <article class="page">
+    <header class="page-head">
+      <p class="eyebrow">02 · About</p>
+      <h1>
+        Stockholm based,<br />
+        <em>working internationally.</em>
+      </h1>
+    </header>
+
+    <div class="cols">
+      <div class="prose">
+        <p class="lede">
+          Model working in hair, fitness and commercial. Shoots across the
+          Nordics and Mediterranean.
+        </p>
+        <p>
+          Most of my work is hair and fitness, where the brief is usually
+          physical and the day is long. Commercial sits alongside it. I travel
+          for shoots and I am comfortable on set in three languages.
+        </p>
+
+        <!-- /now used to be its own page, rebuilt monthly by a generator that
+             no longer exists. It 301s here instead, so availability lives as a
+             sentence a human edits rather than a page that goes stale on its
+             own. Keep it current or delete it; do not automate it again. -->
+        <p class="availability">
+          <span class="availability-dot" aria-hidden="true"></span>
+          Currently based in Stockholm and taking bookings across Europe.
+        </p>
+      </div>
+
+      <aside class="spec" aria-labelledby="spec-title">
+        <h2 id="spec-title" class="spec-title">Measurements</h2>
+        <dl>
+          {stats.map((s) => (
+            <div class="spec-row">
+              <dt>{s.label}</dt>
+              <dd>{s.value}</dd>
+            </div>
+          ))}
+        </dl>
+        <p class="spec-note">Updated 2026. Digitals on request.</p>
+      </aside>
+    </div>
+  </article>
+</Base>
+
+<style>
+  .page {
+    max-width: var(--maxw);
+    margin-inline: auto;
+    padding: var(--s-6) var(--gutter) var(--s-5);
+  }
+
+  .eyebrow {
+    font-size: 0.66rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--faint);
+    margin-bottom: var(--s-3);
+  }
+
+  .page-head h1 {
+    font-size: clamp(2.6rem, 8vw, 6rem);
+    letter-spacing: -0.02em;
+    max-width: 16ch;
+  }
+  .page-head em {
+    font-style: italic;
+    color: var(--ink-soft);
+  }
+
+  .cols {
+    margin-top: var(--s-7);
+    display: grid;
+    gap: var(--s-6);
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+  /* The spec sheet earns a column of its own once there is room for one.
+     Below that it stacks, because a two-column measurement table on a phone
+     is the classic way to force the whole document wider than the viewport. */
+  @media (min-width: 56rem) {
+    .cols { grid-template-columns: 1.15fr 0.85fr; gap: var(--s-7); }
+  }
+
+  .lede {
+    font-family: var(--serif);
+    font-size: clamp(1.5rem, 3.4vw, 2.1rem);
+    line-height: 1.25;
+    color: var(--ink);
+    max-width: 24ch;
+  }
+  .prose p + p { margin-top: var(--s-3); }
+  .prose p:not(.lede) {
+    color: var(--ink-soft);
+    max-width: 52ch;
+    line-height: 1.65;
+  }
+
+  .availability {
+    margin-top: var(--s-4) !important;
+    display: flex;
+    gap: 0.7rem;
+    align-items: baseline;
+    font-size: 0.95rem;
+  }
+  .availability-dot {
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 50%;
+    background: var(--ink-soft);
+    flex: none;
+    transform: translateY(-0.1rem);
+  }
+
+  .spec {
+    border-top: 1px solid var(--line);
+    padding-top: var(--s-3);
+  }
+  .spec-title {
+    font-family: var(--sans);
+    font-size: 0.66rem;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--faint);
+  }
+
+  .spec dl { margin-top: var(--s-3); }
+  .spec-row {
+    display: flex;
+    gap: var(--s-2);
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 0.62rem 0;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .spec-row dt {
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .spec-row dd {
+    margin: 0;
+    font-family: var(--serif);
+    font-size: 1.05rem;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+  }
+
+  .spec-note {
+    margin-top: var(--s-2);
+    font-size: 0.72rem;
+    color: var(--faint);
+    letter-spacing: 0.04em;
+  }
+</style>

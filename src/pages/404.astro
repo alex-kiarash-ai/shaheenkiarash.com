@@ -1,0 +1,85 @@
+---
+import Base from '../layouts/Base.astro';
+
+// wrangler.jsonc sets not_found_handling: "404-page", which serves this file
+// for any unmatched path. Without it Cloudflare returns a bare default page
+// with no way back into the site.
+//
+// /digitals reaches here on purpose and must keep 404ing, so the copy avoids
+// implying every miss is a mistake.
+---
+
+<Base
+  title="Not found"
+  description="That page is not here."
+  path="/404"
+  utility
+>
+  <article class="page">
+    <p class="code" aria-hidden="true">404</p>
+    <h1>That page<br /><em>is not here.</em></h1>
+    <p class="lede">
+      It may have moved, or it may have been retired on purpose. Either way,
+      everything worth seeing is a click away.
+    </p>
+
+    <ul class="ways">
+      <li><a href="/">Home</a></li>
+      <li><a href="/about">About</a></li>
+      <li><a href="/contact">Contact</a></li>
+    </ul>
+  </article>
+</Base>
+
+<style>
+  .page {
+    max-width: var(--maxw);
+    margin-inline: auto;
+    padding: var(--s-7) var(--gutter) var(--s-6);
+    min-height: 52svh;
+  }
+
+  .code {
+    font-family: var(--serif);
+    font-size: clamp(5rem, 22vw, 14rem);
+    line-height: 0.82;
+    color: var(--frame);
+    letter-spacing: -0.03em;
+    user-select: none;
+    margin-bottom: var(--s-3);
+  }
+
+  h1 {
+    font-size: clamp(2.2rem, 7vw, 4.5rem);
+    letter-spacing: -0.02em;
+  }
+  h1 em { font-style: italic; color: var(--ink-soft); }
+
+  .lede {
+    margin-top: var(--s-3);
+    color: var(--ink-soft);
+    max-width: 42ch;
+    line-height: 1.6;
+  }
+
+  .ways {
+    list-style: none;
+    padding: 0;
+    margin-top: var(--s-5);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-3);
+  }
+  .ways a {
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--ink-soft);
+    padding-bottom: 0.25rem;
+    border-bottom: 1px solid var(--line);
+    transition: color 0.35s var(--ease), border-color 0.35s var(--ease);
+  }
+  .ways a:hover,
+  .ways a:focus-visible { color: var(--ink); border-bottom-color: var(--ink); }
+</style>
