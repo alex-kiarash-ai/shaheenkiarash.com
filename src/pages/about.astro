@@ -151,9 +151,18 @@ const description =
   }
 
   .spec dl { margin-top: var(--s-3); }
+
+  /* flex-wrap and min-width:0 are both load-bearing, and leaving them out is
+     what broke the first build of this page. A flex item defaults to
+     min-width:auto, so a row like "Languages / Arabic · English · Swedish"
+     refuses to shrink below its content, widens the document, and every other
+     element on the page is then laid out on that wider canvas and clipped off
+     the right edge of a phone. The symptom appears everywhere except the
+     element that caused it, which is what makes it hard to find. */
   .spec-row {
     display: flex;
-    gap: var(--s-2);
+    flex-wrap: wrap;
+    gap: 0.25rem var(--s-2);
     justify-content: space-between;
     align-items: baseline;
     padding: 0.62rem 0;
@@ -164,14 +173,17 @@ const description =
     letter-spacing: 0.14em;
     text-transform: uppercase;
     color: var(--muted);
+    min-width: 0;
   }
   .spec-row dd {
     margin: 0;
+    min-width: 0;
     font-family: var(--serif);
     font-size: 1.05rem;
     color: var(--ink);
     font-variant-numeric: tabular-nums;
     text-align: right;
+    overflow-wrap: anywhere;
   }
 
   .spec-note {

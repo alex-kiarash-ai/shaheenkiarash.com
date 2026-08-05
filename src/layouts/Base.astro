@@ -272,11 +272,15 @@ const INSTAGRAM = 'https://www.instagram.com/shaheen.kiarash/';
         padding: var(--s-2) 0;
         border-top: 1px solid var(--line-soft);
       }
+      /* min-width:0 on both sides of the row for the same reason as the
+         measurements table: flex items default to min-width:auto and an email
+         address is long enough to widen the whole document on a phone. */
       .route-label {
         font-size: 0.68rem;
         letter-spacing: 0.18em;
         text-transform: uppercase;
         color: var(--faint);
+        min-width: 0;
       }
       .route-value {
         font-family: var(--serif);
@@ -285,6 +289,8 @@ const INSTAGRAM = 'https://www.instagram.com/shaheen.kiarash/';
         text-decoration: none;
         border-bottom: 1px solid var(--line);
         transition: border-color 0.35s var(--ease);
+        min-width: 0;
+        overflow-wrap: anywhere;
       }
       .route-value:hover,
       .route-value:focus-visible { border-bottom-color: var(--ink); }
