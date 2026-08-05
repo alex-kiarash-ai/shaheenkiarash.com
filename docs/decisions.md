@@ -89,3 +89,21 @@ What remains is Workers Scripts:Edit and Account Settings:Read on the account, W
 **Staging is the default deploy target, and production requires a second variable.** The deploy step previously ran a bare `wrangler deploy` against a config naming the worker the live domain is bound to. Enabling deploys for the first time would therefore have published a placeholder over the live site. Now `DEPLOY_TARGET` must equal `production` for that to be possible, and a separate guard refuses any production deploy whose build still carries `noindex`.
 
 Verified rather than assumed: the first real deploy went to `shaheenkiarash-staging`, and the live site's homepage hashed identically before and after.
+
+---
+
+## 2026-08-05 — Correction: the mobile overflow that was not there
+
+The previous commit claimed to fix a layout defect on narrow viewports. There was no defect. This entry exists because the claim is in the history and the history is public.
+
+**What happened.** The pages were rendered with `chrome --headless --window-size=390,1500 --screenshot` and the output showed navigation running past the edge, body copy cut mid-word, and the measurements column entirely off-screen. That was diagnosed as a flex item refusing to shrink, and `flex-wrap` plus `min-width: 0` were shipped as the fix.
+
+**What was actually true.** Chrome on Windows clamps its window to a minimum width of roughly 504 pixels. Asked for 390, it laid the page out at 504 and then cropped the screenshot to 390. Everything looked clipped because everything *was* clipped, by the screenshot rather than by the layout. A probe page confirmed it: requesting 390 reported `innerWidth=504`.
+
+The tell was available and initially missed: the contact page, which has no measurements table, showed identical clipping. A fix targeting one component cannot explain a symptom on a page without that component.
+
+**How it is now measured.** Layout viewport is set through the DevTools protocol's `Emulation.setDeviceMetricsOverride`, which no window minimum applies to, and horizontal overflow is reported as `documentElement.scrollWidth` against `innerWidth` rather than judged from an image. Measured that way, every page returns equal values at 390, 768 and 1440.
+
+**The CSS was kept.** `min-width: 0` on flex children is correct regardless, and reverting sound code to score a point about provenance would be its own mistake. What changed is that the comment in the file no longer claims it repaired something.
+
+**The rule taken from this:** a screenshot is evidence about the renderer as much as about the page. Before trusting one as a bug report, confirm the tool measured what it was asked to measure.

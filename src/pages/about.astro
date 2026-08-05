@@ -152,13 +152,18 @@ const description =
 
   .spec dl { margin-top: var(--s-3); }
 
-  /* flex-wrap and min-width:0 are both load-bearing, and leaving them out is
-     what broke the first build of this page. A flex item defaults to
-     min-width:auto, so a row like "Languages / Arabic · English · Swedish"
-     refuses to shrink below its content, widens the document, and every other
-     element on the page is then laid out on that wider canvas and clipped off
-     the right edge of a phone. The symptom appears everywhere except the
-     element that caused it, which is what makes it hard to find. */
+  /* flex-wrap and min-width:0 are defensive, not corrective. A flex item
+     defaults to min-width:auto, so a long row such as "Languages / Arabic ·
+     English · Swedish" could refuse to shrink below its own content and widen
+     the whole document. These declarations make that impossible.
+
+     Honest note, because the history says otherwise: they were added while
+     chasing an overflow that did not exist. A headless screenshot at 390px was
+     misread as clipping, when Chrome on Windows had actually clamped the window
+     to a 504px minimum, laid out at 504 and cropped the image to 390. Measured
+     afterwards, scrollWidth equals innerWidth at 390, 768 and 1440 on every
+     page. The rules are kept because they are correct, not because they fixed
+     anything. */
   .spec-row {
     display: flex;
     flex-wrap: wrap;
