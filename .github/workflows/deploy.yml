@@ -86,16 +86,66 @@ jobs:
           name: dist
           path: dist
 
+      # STAGING IS THE DEFAULT, and that is the whole point of this step.
+      #
+      # deploy/wrangler.jsonc names the worker `plain-block-545a`, which is the
+      # one the live domain is bound to. So a bare `wrangler deploy` publishes
+      # straight over the real site. Until this step existed, turning
+      # DEPLOY_ENABLED on for the first time would have replaced the portfolio
+      # with a noindex placeholder, which is the exact opposite of the recorded
+      # decision that B2 deploys to staging.
+      #
+      # Production now requires DEPLOY_TARGET=production, set deliberately and
+      # separately from DEPLOY_ENABLED. Anything else, including unset, is
+      # staging. Two variables have to be right before the live site can move.
+      - name: Resolve deploy target
+        id: target
+        run: |
+          set -euo pipefail
+          if [ "${{ vars.DEPLOY_TARGET }}" = "production" ]; then
+            echo "mode=production"                     >> "$GITHUB_OUTPUT"
+            echo "args="                               >> "$GITHUB_OUTPUT"
+            echo "url=${{ vars.SITE_URL || 'https://shaheenkiarash.com' }}" >> "$GITHUB_OUTPUT"
+          else
+            name="${{ vars.STAGING_WORKER_NAME || 'shaheenkiarash-staging' }}"
+            echo "mode=staging"                        >> "$GITHUB_OUTPUT"
+            echo "args=--name $name"                   >> "$GITHUB_OUTPUT"
+            echo "url=${{ vars.STAGING_URL }}"         >> "$GITHUB_OUTPUT"
+            echo "Deploying to STAGING worker '$name'. Set DEPLOY_TARGET=production to publish live."
+          fi
+
+      # Refuse to overwrite the live site with a page that tells search engines
+      # to forget it. The placeholder carries `noindex` until the build phase
+      # removes it, so this guard is what makes "production" safe to enable at
+      # the moment someone is confident enough to set the variable.
+      - name: Guard - never publish a noindex build to production
+        if: steps.target.outputs.mode == 'production'
+        run: |
+          set -euo pipefail
+          if grep -rqi 'name="robots"[^>]*noindex' dist/index.html; then
+            echo "::error::Refusing production deploy: dist/index.html still carries noindex. Remove it in the build phase first."
+            exit 1
+          fi
+          echo "No noindex in the production build."
+
       - name: Deploy to Cloudflare Workers
         uses: cloudflare/wrangler-action@ebbaa1584979971c8614a24965b4405ff95890e0 # v4.0.0
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: deploy --config deploy/wrangler.jsonc
+          command: deploy --config deploy/wrangler.jsonc ${{ steps.target.outputs.args }}
+
+      # A skipped check must say so out loud. Silence here would read as "the
+      # smoke checks passed" when nothing ran at all.
+      - name: Note when smoke checks cannot run
+        if: steps.target.outputs.url == ''
+        run: |
+          echo "::warning::Deployed to ${{ steps.target.outputs.mode }} but STAGING_URL is not set, so NO post-deploy checks ran. Set the STAGING_URL repo variable to the worker's URL to enable them."
 
       - name: Verify the deploy, because "it uploaded" is not "it works"
+        if: steps.target.outputs.url != ''
         env:
-          SITE: ${{ vars.SITE_URL || 'https://shaheenkiarash.com' }}
+          SITE: ${{ steps.target.outputs.url }}
         run: |
           set -euo pipefail
           echo "Verifying $SITE"
