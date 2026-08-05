@@ -3,21 +3,23 @@
 // block from here, so the "contact appears twice on every page" rule from the
 // design phase is structural rather than something each page remembers to do.
 import '../styles/global.css';
+import { LIVE, SITE as SITE_URL } from '../site';
 
 interface Props {
   title: string;
   description: string;
   /** Path with a leading slash, e.g. "/about". Used for the canonical URL. */
   path: string;
-  /** Kept until the build phase replaces the placeholder home page. */
-  noindex?: boolean;
   /** 404 and other utility pages stay out of the sitemap and the nav flow. */
   utility?: boolean;
 }
 
-const { title, description, path, noindex = false, utility = false } = Astro.props;
+// noindex is derived, not passed. Before launch every page carries it; after
+// the flag flips, none do. A page cannot be accidentally left behind.
+const { title, description, path, utility = false } = Astro.props;
+const noindex = !LIVE;
 
-const SITE = 'https://shaheenkiarash.com';
+const SITE = SITE_URL;
 const canonical = SITE + path;
 const fullTitle = path === '/' ? 'Shaheen Kiarash' : `${title} · Shaheen Kiarash`;
 

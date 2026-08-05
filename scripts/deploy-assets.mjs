@@ -21,6 +21,9 @@ import path from 'node:path';
 
 const ROOT = process.cwd();
 const SRC = path.join(ROOT, 'src', 'assets', 'photos');
+// Fixed-path assets ride the same origin. /comp-card.pdf is printed on cards
+// already in circulation, so its URL is not ours to change.
+const STATIC = path.join(ROOT, 'src', 'assets', 'static');
 const OUT = path.join(ROOT, 'deploy', 'assets-dist');
 const DRY = process.argv.includes('--dry-run');
 
@@ -39,6 +42,12 @@ await rm(OUT, { recursive: true, force: true });
 await mkdir(OUT, { recursive: true });
 for (const f of photos) await copyFile(path.join(SRC, f), path.join(OUT, f));
 
+let statics = [];
+if (existsSync(STATIC)) {
+  statics = await readdir(STATIC);
+  for (const f of statics) await copyFile(path.join(STATIC, f), path.join(OUT, f));
+}
+
 // This origin exists for the build, not for readers. Keeping it out of search
 // results avoids a second, uncredited copy of the portfolio competing with the
 // real site for the same images.
@@ -55,7 +64,7 @@ await writeFile(
   ].join('\n')
 );
 
-console.log(`deploy-assets: staged ${photos.length} photos + robots.txt + _headers`);
+console.log(`deploy-assets: staged ${photos.length} photos + ${statics.length} fixed-path assets + robots.txt + _headers`);
 
 if (DRY) {
   console.log('deploy-assets: --dry-run, nothing uploaded');

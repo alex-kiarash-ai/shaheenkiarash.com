@@ -51,3 +51,12 @@ src/assets/photos/
 # Staged payload for the photo-origin Worker. Built by
 # scripts/deploy-assets.mjs from the fetched photos, never committed.
 deploy/assets-dist/
+
+# Fixed-path assets fetched at build time (PDFs contain the same unlicensed
+# photographs, so they stay out of a public repo like everything else).
+public/comp-card.pdf
+public/shaheen-kiarash-portfolio.pdf
+public/og-image.jpg
+public/favicon-32.png
+public/apple-touch-icon.png
+src/assets/static/

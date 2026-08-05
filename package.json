@@ -11,8 +11,9 @@
     "preview": "astro preview",
     "astro": "astro",
     "fetch:photos": "node scripts/fetch-photos.mjs",
-    "prebuild": "node scripts/fetch-photos.mjs",
-    "predev": "node scripts/fetch-photos.mjs"
+    "prebuild": "node scripts/fetch-photos.mjs && node scripts/fetch-static.mjs",
+    "predev": "node scripts/fetch-photos.mjs && node scripts/fetch-static.mjs",
+    "fetch:static": "node scripts/fetch-static.mjs"
   },
   "dependencies": {
     "astro": "^7.1.6"
