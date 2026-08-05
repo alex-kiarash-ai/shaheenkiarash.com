@@ -107,3 +107,19 @@ The tell was available and initially missed: the contact page, which has no meas
 **The CSS was kept.** `min-width: 0` on flex children is correct regardless, and reverting sound code to score a point about provenance would be its own mistake. What changed is that the comment in the file no longer claims it repaired something.
 
 **The rule taken from this:** a screenshot is evidence about the renderer as much as about the page. Before trusting one as a bug report, confirm the tool measured what it was asked to measure.
+
+---
+
+## 2026-08-05 — Photographs live outside the repository
+
+The portfolio is built from 24 photographs that are not in this repository and never have been. They are fetched during the build, optimised into `dist`, and served from the site's own origin.
+
+**Why not simply commit them.** The repository is public and the photographs are not licensed for redistribution. Git history is permanent: committing them and deleting them later leaves them fully recoverable at the earlier commit, and anyone who cloned in between keeps a copy regardless. There is no version of "add now, remove if the answer is no" that works.
+
+**Why this costs a build script rather than a rewrite.** The content model was designed for it. Each frame is a markdown entry whose `src` is resolved at build time, so the source of the file is a configuration value rather than a structural assumption. Narrowing the licence changes where `PHOTO_SOURCE` points and nothing else.
+
+**The fetch fails the build rather than degrading.** A portfolio that compiles green with no photographs in it would be a worse outcome than one that refuses to compile, so a missing file is a hard error. The script also checks JPEG magic bytes rather than trusting the status code, because static hosts commonly answer 200 with an HTML error page for a missing asset, and that would otherwise be written to disk as a "photograph".
+
+**Curation was carried across, not regenerated.** The order, alt text and category of every frame come from the existing site. The ordering is not arbitrary: it interleaves so that two shirtless frames never sit adjacent while a clothed frame is still unplaced. Sorting by filename would have discarded that silently. Order values step by ten so a frame can be inserted later without renumbering the set.
+
+**Known and deliberate: `PHOTO_SOURCE` is temporary.** It currently points at the live site, which serves these files today. The cutover replaces that site, so the source must move to durable private storage before then. This is recorded rather than left implicit, because the failure it would otherwise cause arrives at the worst possible moment and looks like the cutover broke the build.
