@@ -71,3 +71,21 @@ The near-black palette carries over from the previous site, which was reviewed a
 **One real defect was found by measuring rather than eyeballing.** The faintest ink token had been raised specifically to clear WCAG AA, and it did — at 4.51:1, by one hundredth. But that was measured against the canvas only, and the same token is used on two lighter surfaces where it fell to 4.32 and 3.98 and stopped passing. It was corrected to a value that clears 4.5:1 on all four surfaces while keeping the warm hue relationship.
 
 The lesson worth keeping: a contrast fix measured against one background is half a fix.
+
+---
+
+## 2026-08-05 — Deploy credentials: least privilege, and staging as the default
+
+Two decisions taken together, both about making the dangerous thing hard rather than remembering not to do it.
+
+**The token was trimmed from Cloudflare's template.** The "Edit Cloudflare Workers" template ships with ten account-level permissions: KV, R2, Pages, Containers, Observability, Builds Configuration, Agents Configuration and Tail alongside the two that matter. This site has no bindings at all, which the deploy output confirms on every run, so seven of those govern capabilities that do not exist here. They were removed.
+
+Workers Tail was removed separately and for a different reason. It streams live request logs, which means visitor IP addresses and requested URLs. Every other permission on this token moves configuration; that one reads people. A token living in a public repository's CI should not be able to watch the site's traffic.
+
+What remains is Workers Scripts:Edit and Account Settings:Read on the account, Workers Routes:Edit scoped to this zone alone, and the two user-detail reads Cloudflare attaches to every token. Notably absent: any DNS or Email Routing access. This zone carries a live email address, so a token that could reach it would be a standing risk for no benefit.
+
+**Trade-off accepted:** a too-narrow token fails at deploy time with an explicit permission error naming what it wanted, which costs one edit. A too-broad token fails silently, forever, and only matters on the day it leaks.
+
+**Staging is the default deploy target, and production requires a second variable.** The deploy step previously ran a bare `wrangler deploy` against a config naming the worker the live domain is bound to. Enabling deploys for the first time would therefore have published a placeholder over the live site. Now `DEPLOY_TARGET` must equal `production` for that to be possible, and a separate guard refuses any production deploy whose build still carries `noindex`.
+
+Verified rather than assumed: the first real deploy went to `shaheenkiarash-staging`, and the live site's homepage hashed identically before and after.
