@@ -41,3 +41,9 @@ src/assets/originals/
 # Never
 .env*
 !.env.example
+
+# Fetched at build time by scripts/fetch-photos.mjs, never committed.
+# The repo is public and these photographs are not licensed for
+# redistribution. Git history is permanent, so keeping them out is the whole
+# mechanism, not a tidiness preference.
+src/assets/photos/

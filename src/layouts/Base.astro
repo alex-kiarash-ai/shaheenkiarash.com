@@ -21,12 +21,13 @@ const SITE = 'https://shaheenkiarash.com';
 const canonical = SITE + path;
 const fullTitle = path === '/' ? 'Shaheen Kiarash' : `${title} · Shaheen Kiarash`;
 
-// Portfolio is deliberately absent until the photographs land. A nav link to a
-// page that 404s is worse than a nav with one fewer item.
+// Portfolio joined on 2026-08-05, when the page actually existed. It was held
+// out until then because a nav link to a 404 is worse than one fewer item.
 const nav = [
   { href: '/', label: 'Home', index: '01' },
-  { href: '/about', label: 'About', index: '02' },
-  { href: '/contact', label: 'Contact', index: '03' },
+  { href: '/portfolio', label: 'Portfolio', index: '02' },
+  { href: '/about', label: 'About', index: '03' },
+  { href: '/contact', label: 'Contact', index: '04' },
 ];
 
 const EMAIL = 'shaheen@shaheenkiarash.com';

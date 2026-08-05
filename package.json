@@ -9,7 +9,10 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "fetch:photos": "node scripts/fetch-photos.mjs",
+    "prebuild": "node scripts/fetch-photos.mjs",
+    "predev": "node scripts/fetch-photos.mjs"
   },
   "dependencies": {
     "astro": "^7.1.6"
