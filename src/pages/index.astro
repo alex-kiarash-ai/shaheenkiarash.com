@@ -1,35 +1,123 @@
 ---
-// Still the placeholder, but now inside the shared shell so it carries the
-// nav, the contact block and the same head tags as every other page. The real
-// home page arrives with the photographs; the noindex comes off then, and
-// removing it is the switch that makes the site publicly discoverable.
+import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
 import Base from '../layouts/Base.astro';
+import hero from '../assets/photos/hero.jpg';
 
-const description = 'Shaheen Kiarash, model based in Stockholm. Hair, fitness and commercial.';
+// The wireframe's brief for this page, kept verbatim because it is the whole
+// design: get a booker from landing to "I know how to hire him" without a
+// decision point in between. Everything below serves that sequence and nothing
+// else appears.
+//
+// Six frames, not twenty-four. The full book is one click away and the point
+// of this page is momentum, not completeness.
+const featured = (await getCollection('photos'))
+  .sort((a, b) => a.data.order - b.data.order)
+  .slice(0, 6);
+
+// The proof layer. The wireframe shipped these as dashes because they were a
+// data gap; they are real now, carried from the live site rather than invented.
+const stats = [
+  { label: 'Height', value: '184 cm' },
+  { label: 'Chest', value: '108 cm' },
+  { label: 'Waist', value: '82 cm' },
+  { label: 'Shoe', value: 'EU 45' },
+];
+
+const description =
+  'Shaheen Kiarash, male model based in Stockholm. Hair, fitness and commercial. Available worldwide.';
 ---
 
 <Base title="Home" description={description} path="/" noindex>
+  <!-- Split, not full bleed. The chosen hero frame is 1066x1600 portrait, and
+       the only landscape files in the set top out far below what a full-width
+       hero needs. Stretching a portrait across a 1440px canvas would upscale
+       and crop the subject badly, so the layout adapts to the photograph
+       instead. A genuine full-bleed horizontal is a shoot, not a CSS change. -->
   <section class="hero">
-    <p class="eyebrow">01 · Portfolio in progress</p>
-    <h1>Shaheen<br />Kiarash</h1>
-    <p class="line">Hair · Fitness · Commercial</p>
-    <p class="meta">
-      The new portfolio is being rebuilt. Built with Astro, compiled to static
-      HTML and CSS, served from Cloudflare's edge, deployed by GitHub Actions.
-      Bookings are open in the meantime.
-    </p>
+    <div class="hero-type">
+      <h1>Shaheen<br />Kiarash</h1>
+      <p class="tagline">Male model · Stockholm · available worldwide</p>
+      <p class="disciplines">Hair · Fitness · Commercial</p>
+    </div>
+
+    <div class="hero-frame">
+      <Image
+        src={hero}
+        alt="Shaheen Kiarash, poolside portrait in sunglasses, long curls, resort setting"
+        widths={[533, 800, 1066]}
+        sizes="(min-width: 60rem) 42vw, 100vw"
+        formats={['avif', 'webp']}
+        quality={84}
+        loading="eager"
+        fetchpriority="high"
+        decoding="async"
+      />
+    </div>
+  </section>
+
+  <section class="selected" aria-labelledby="selected-title">
+    <header class="section-head">
+      <p class="eyebrow">Selected work</p>
+      <h2 id="selected-title">A few frames.</h2>
+      <a class="see-all" href="/portfolio">See the full book →</a>
+    </header>
+
+    <div class="strip">
+      {featured.map((photo, i) => (
+        <figure class="frame">
+          <Image
+            src={photo.data.src}
+            alt={photo.data.alt}
+            widths={[400, 640, 900]}
+            sizes="(min-width: 64rem) 32vw, (min-width: 40rem) 48vw, 90vw"
+            formats={['avif', 'webp']}
+            quality={82}
+            loading={i < 2 ? 'eager' : 'lazy'}
+            decoding="async"
+          />
+          <figcaption>{photo.data.tags[0]}</figcaption>
+        </figure>
+      ))}
+    </div>
+  </section>
+
+  <!-- The proof layer: clients and measurements as fact, not decoration. The
+       In Motion film section belongs here per the wireframe and is deliberately
+       absent: the file needs a private host that has not been decided yet, and
+       a film section with no film would be worse than none. -->
+  <section class="proof" aria-labelledby="proof-title">
+    <h2 id="proof-title" class="sr-only">Details</h2>
+
+    <div class="proof-grid">
+      <div class="proof-block">
+        <p class="eyebrow">Worked with</p>
+        <p class="clients">Shady Rays · Lullevibes</p>
+      </div>
+
+      <div class="proof-block">
+        <p class="eyebrow">Measurements</p>
+        <dl class="stats">
+          {stats.map((s) => (
+            <div>
+              <dt>{s.label}</dt>
+              <dd>{s.value}</dd>
+            </div>
+          ))}
+        </dl>
+        <a class="more" href="/about">Full measurements →</a>
+      </div>
+    </div>
   </section>
 </Base>
 
 <style>
-  .hero {
-    max-width: var(--maxw);
-    margin-inline: auto;
-    padding: var(--s-7) var(--gutter) var(--s-6);
-    min-height: 62svh;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
+  .sr-only {
+    position: absolute;
+    width: 1px; height: 1px;
+    padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0 0 0 0);
+    white-space: nowrap; border: 0;
   }
 
   .eyebrow {
@@ -37,28 +125,182 @@ const description = 'Shaheen Kiarash, model based in Stockholm. Hair, fitness an
     letter-spacing: 0.22em;
     text-transform: uppercase;
     color: var(--faint);
-    margin-bottom: var(--s-3);
   }
 
-  h1 {
-    font-size: clamp(3rem, 13vw, 9rem);
+  /* ---- hero ---------------------------------------------------------- */
+
+  .hero {
+    max-width: var(--maxw);
+    margin-inline: auto;
+    padding: var(--s-5) var(--gutter) var(--s-6);
+    display: grid;
+    gap: var(--s-5);
+    grid-template-columns: 1fr;
+    align-items: end;
+  }
+  @media (min-width: 60rem) {
+    .hero {
+      grid-template-columns: 1fr 0.78fr;
+      gap: var(--s-6);
+      padding-top: var(--s-6);
+      padding-bottom: var(--s-7);
+      min-height: 76svh;
+    }
+  }
+
+  .hero h1 {
+    font-size: clamp(3rem, 11vw, 8rem);
+    line-height: 0.9;
     letter-spacing: -0.025em;
-    line-height: 0.92;
   }
-
-  .line {
-    color: var(--ink-soft);
+  .tagline {
     margin-top: var(--s-3);
-    font-size: 0.72rem;
+    color: var(--ink-soft);
+    font-size: clamp(0.95rem, 2vw, 1.1rem);
+  }
+  .disciplines {
+    margin-top: var(--s-2);
+    font-size: 0.7rem;
     letter-spacing: 0.2em;
     text-transform: uppercase;
+    color: var(--faint);
   }
 
-  .meta {
-    color: var(--faint);
-    margin-top: var(--s-4);
-    font-size: 0.85rem;
-    max-width: 48ch;
-    line-height: 1.65;
+  .hero-frame :global(img) {
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    object-fit: cover;
+    display: block;
+    background: var(--bg-elevated);
   }
+
+  /* ---- selected work -------------------------------------------------- */
+
+  .selected {
+    max-width: var(--maxw);
+    margin-inline: auto;
+    padding: var(--s-5) var(--gutter);
+    border-top: 1px solid var(--line-soft);
+  }
+
+  .section-head {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2) var(--s-3);
+    align-items: baseline;
+    justify-content: space-between;
+  }
+  .section-head h2 {
+    font-size: clamp(1.8rem, 5vw, 3rem);
+    letter-spacing: -0.015em;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  .section-head .eyebrow { flex: 1 0 100%; margin-bottom: var(--s-2); }
+
+  .see-all {
+    font-size: 0.7rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    text-decoration: none;
+    padding-bottom: 0.25rem;
+    border-bottom: 1px solid var(--line);
+    white-space: nowrap;
+    transition: color 0.35s var(--ease), border-color 0.35s var(--ease);
+  }
+  .see-all:hover,
+  .see-all:focus-visible { color: var(--ink); border-bottom-color: var(--ink); }
+
+  .strip {
+    margin-top: var(--s-4);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--s-3);
+  }
+  @media (min-width: 40rem) { .strip { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (min-width: 64rem) { .strip { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s-4); } }
+
+  .frame { margin: 0; }
+  .frame :global(img) {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    display: block;
+    background: var(--bg-elevated);
+  }
+  .frame figcaption {
+    margin-top: 0.6rem;
+    font-size: 0.64rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* ---- proof layer ----------------------------------------------------- */
+
+  .proof {
+    max-width: var(--maxw);
+    margin-inline: auto;
+    padding: var(--s-6) var(--gutter) var(--s-4);
+  }
+  .proof-grid {
+    display: grid;
+    gap: var(--s-5);
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 48rem) {
+    .proof-grid { grid-template-columns: 1fr 1fr; gap: var(--s-6); }
+  }
+
+  .clients {
+    margin-top: var(--s-2);
+    font-family: var(--serif);
+    font-size: clamp(1.4rem, 3.4vw, 2rem);
+    color: var(--ink);
+  }
+
+  .stats {
+    margin-top: var(--s-2);
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 var(--s-3);
+  }
+  .stats > div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem var(--s-2);
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--line-soft);
+    min-width: 0;
+  }
+  .stats dt {
+    font-size: 0.66rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    min-width: 0;
+  }
+  .stats dd {
+    margin: 0;
+    min-width: 0;
+    font-family: var(--serif);
+    font-size: 1rem;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .more {
+    display: inline-block;
+    margin-top: var(--s-3);
+    font-size: 0.68rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    text-decoration: none;
+    border-bottom: 1px solid var(--line);
+  }
+  .more:hover, .more:focus-visible { color: var(--ink); border-bottom-color: var(--ink); }
 </style>

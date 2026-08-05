@@ -38,6 +38,11 @@ const DEST = path.join(process.cwd(), 'src', 'assets', 'photos');
 // not a build detail, so the ORDER lives in the content entries; this list is
 // only what to fetch.
 const FILES = [
+  // The home hero. Portrait, and deliberately so: it is the existing chosen
+  // frame and the only landscape files in the set top out well below what a
+  // full-bleed hero needs, so the layout adapts to the asset rather than the
+  // asset being stretched to fit a layout.
+  'hero.jpg',
   'portfolio-1.jpg', 'portfolio-2.jpg', 'portfolio-3.jpg', 'portfolio-4.jpg',
   'portfolio-5.jpg', 'portfolio-6.jpg', 'portfolio-7.jpg', 'portfolio-8.jpg',
   'portfolio-9.jpg', 'portfolio-12.jpg', 'portfolio-13.jpg', 'portfolio-14.jpg',
